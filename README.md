@@ -12,7 +12,6 @@
 ---
 
 ## 📸 Overview / Aperçu
-![Premium Design Preview](https://github.com/tawfiq154/-Gestionnaire-Intelligent-de-CV-et-Lettres-de-Motivation-avec-IA-main/raw/main/assets/mockup.png)
 
 ---
 
