@@ -1,0 +1,106 @@
+### ================================================================
+### 🚀 GUIDE DE TEST RAPIDE (APRÈS RESET)
+### ================================================================
+
+### 1. Inscription (Hassan El Amrani)
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Hassan",
+  "lastName": "El Amrani",
+  "email": "hassan.test@example.com",
+  "password": "Password123"
+}
+
+###
+
+### 2. Connexion (Pour obtenir le Token)
+# @name login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "hassan.test@example.com",
+  "password": "Password123"
+}
+
+### >>> COPIEZ LE 'accessToken' DU RÉSULTAT ET COLLEZ-LE CI-DESSOUS <<<
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtbnl5eTZsZTAwMTZxdjB1NWloc3N6bXQiLCJlbWFpbCI6Imhhc3Nhbi50ZXN0QGV4YW1wbGUuY29tIiwiaWF0IjoxNzc2MjUwMDc2LCJleHAiOjE3NzY4NTQ4NzZ9.jc3unTq_D7eFN66lWNjul0I5vwVECUjWBWF4-KT2nik
+
+### ================================================================
+
+### 3. Créer un Profil Professionnel
+# @name createProfil
+POST http://localhost:3000/api/profils
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titre": "Développeur Full Stack Senior",
+  "competences": ["Node.js", "React", "Docker", "Prisma", "MySQL", "OpenAI"],
+  "experiences": [
+    {
+      "company": "Tech Solutions",
+      "role": "Senior Developer",
+      "duration": "2021 - Présent",
+      "description": "Développement d'architectures microservices et intégration IA."
+    }
+  ],
+  "formations": [
+    {
+      "school": "École Polytechnique",
+      "degree": "Master Informatique",
+      "year": "2020"
+    }
+  ],
+  "langues": [
+    { "language": "Français", "level": "Natif" },
+    { "language": "Anglais", "level": "C1" }
+  ],
+  "isDefault": true
+}
+
+### >>> LE PROFIL ID SERA RÉCUPÉRÉ AUTOMATIQUEMENT CI-DESSOUS <<<
+@profilId = cmnzxzisp000zqv0typpp4z8t
+
+### ================================================================
+
+### 4. Générer un CV avec l'IA
+POST http://localhost:3000/api/cvs
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titre": "Mon CV Premium 2024",
+  "profilId": "{{profilId}}",
+  "templateId": "modern"
+}
+
+###
+
+### 5. Générer une Lettre de Motivation avec l'IA
+POST http://localhost:3000/api/lettres
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titre": "Candidature Lead Dev @ OpenAI",
+  "poste": "Lead Software Engineer",
+  "entreprise": "OpenAI",
+  "descriptionPoste": "Expert Node.js passionné par l'IA.",
+  "ton": "DYNAMIQUE",
+  "profilId": "{{profilId}}"
+}
+
+###
+
+### 6. Test de l'outil d'amélioration de texte
+POST http://localhost:3000/api/tools/refine
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "text": "bghit nkhdm m3akom hit ana wa3r bzaf f nodejs",
+  "task": "IMPROVE"
+}

@@ -1,0 +1,138 @@
+// This is your Prisma schema file
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================
+// User Model
+// ============================
+model User {
+  id        String   @id @default(cuid()) // Auto-generated unique ID
+  email     String   @unique              // Email (non-repeating)
+  password  String                        // Bcrypt encrypted password
+  firstName String                        // First name
+  lastName  String                        // Last name
+  createdAt DateTime @default(now())      // Creation date (automatic)
+  updatedAt DateTime @updatedAt           // Last modification date (automatic)
+
+  lettres Lettre[] // Relationship: One user → Many letters
+  profils Profil[] // Relationship: One user → Many profiles
+  offres  Offre[]  // Relationship: One user → Many saved job offers
+  cvs     Cv[]     // Relationship: One user → Many generated CVs
+
+  @@map("users") // Table name in the database
+}
+
+// ============================
+// Candidate Profile Model
+// ============================
+model Profil {
+  id          String   @id @default(cuid())
+  titre       String   // Example: "Full-Stack Developer"
+  competences Json     // Array: ["JavaScript", "React", ...]
+  experiences Json     // Array of objects: [{company, role, duration, description}, ...]
+  formations  Json     // Array of objects: [{school, degree, year}, ...]
+  langues     Json     // Array of objects: [{language, level}, ...]
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId  String          // Foreign key → User
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lettres Lettre[] 
+  cvs     Cv[]     // Relationship: One profile → Many generated CVs
+
+  @@map("profils")
+}
+
+// ============================
+// Job Offer Model (New)
+// ============================
+model Offre {
+  id          String   @id @default(cuid())
+  titre       String   // Job title
+  entreprise  String?  // Company name
+  description String?  @db.Text
+  url         String?  // Link to the job post
+  status      String   @default("EN_ATTENTE") // EN_ATTENTE, POSTULE, ARCHIVE
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("offres")
+}
+
+// ============================
+// Generated CV Model (New)
+// ============================
+model Cv {
+  id          String   @id @default(cuid())
+  titre       String   // Name for this CV version
+  contenu     String   @db.Text // JSON or HTML representation of the final CV
+  templateId  String   @default("classic") // ID of the visual design used
+  promptUsed  String?  @db.Text 
+  modelUsed   String?  
+  tokensUsed  Int?     
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profilId String
+  profil   Profil   @relation(fields: [profilId], references: [id], onDelete: Cascade)
+
+  @@map("cvs")
+}
+
+// ============================
+// Generated Motivational Letter Model
+// ============================
+model Lettre {
+  id               String   @id @default(cuid())
+  titre            String   
+  poste            String   
+  entreprise       String   
+  descriptionPoste String?  @db.Text
+  contenu          String   @db.Text 
+  ton              Ton      @default(PROFESSIONNEL) 
+  status           Status   @default(BROUILLON)     
+  promptUsed       String?  @db.Text 
+  modelUsed        String?  
+  tokensUsed       Int?     
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  userId   String          
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profilId String?         
+  profil   Profil?  @relation(fields: [profilId], references: [id])
+
+  @@map("lettres")
+}
+
+// ============================
+// Enums — Predefined values
+// ============================
+
+enum Ton {
+  PROFESSIONNEL 
+  DYNAMIQUE     
+  CREATIF       
+  FORMEL        
+}
+
+enum Status {
+  BROUILLON 
+  FINALE    
+  ENVOYEE   
+  ARCHIVEE  
+}
